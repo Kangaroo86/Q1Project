@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Widget Generator</title>
+  <link rel="stylesheet" type="text/css" href="./static/app.css">
+  <link href="static/materialize/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <script defer src="./static/app.js"></script>
+</head>
+<body>
+  <div id="root">
+  </div>
+
+
+
+<!-- MATERIALIZE INPUT FORM -->
+  <div class="row">
+    <form class="col s12">
+      <div class="row">
+        <div class="input-field col s12">
+          <textarea id="textarea1" class="materialize-textarea"></textarea>
+          <label for="textarea1">Textarea</label>
+        </div>
+      </div>
+      <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+        <!-- <i class="material-icons right">send</i> -->
+      </button>
+    </form>
+  </div>
+
+
+
+<!-- ICON BOX -->
+  <div class="row">
+    <div class="col s12 m5">
+      <div class="card">
+        <div class="card-image">
+          <img id="test" src=" ">
+        </div>
+        <div class="card-content">
+          <p class="card-title" id="teamName">I am a very simple card. I am good at containing small bits of information.
+          I am convenient because I require little markup to use effectively.</p>
+        </div>
+        <div class="card-action">
+          <a href="#">This is a link</a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col s12 m7">
+      <div class="card horizontal">
+    <table class="bordered">
+         <thead>
+           <tr>
+               <th>Players</th>
+               <th>PPG</th>
+               <th>Rebounds</th>
+               <th>Assists</th>
+               <th>Steals</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr>
+             <td><img id="topPlayerA"></td>
+             <td id="playerA_PPG">####</td>
+             <td id="playerA_Rebounds">####</td>
+             <td id="playerA_Assists">####</td>
+             <td id="playerA_Steals">####</td>
+           </tr>
+           <tr>
+             <td><img id="topPlayerB"></td>
+             <td id="playerB_PPG">####</td>
+             <td id="playerB_Rebounds">####</td>
+             <td id="playerB_Assists">####</td>
+             <td id="playerB_Steals">####</td>
+           </tr>
+           <tr>
+             <td><img id="topPlayerC"></td>
+             <td id="playerC_PPG">####</td>
+             <td id="playerC_Rebounds">####</td>
+             <td id="playerC_Assists">####</td>
+             <td id="playerC_Steals">####</td>
+           </tr>
+         </tbody>
+       </table>
+     </div>
+   </div>
+
+
+
+</div>
+
+
+
+
+
+
+</body>
+</html>
