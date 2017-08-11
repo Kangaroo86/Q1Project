@@ -1,20 +1,27 @@
 /* eslint-disable no-console */
 
-const NBAScraper = require('./scrapers/NBAScraper');
+const NBAScraper = require('./scrapers/NBAScraper'); //this is how you import from the other modules
+const Widget = require('./components/Widget');
+const InputForm = require('./components/InputForm');
 
 addEventListener('DOMContentLoaded', main);
 
 const scraper = new NBAScraper();
 
 function main() {
+  const $root = document.getElementById('root');
+  $root.appendChild(InputForm());
+
   scraper
     .scrape(
-      'http://www.espn.com/nba/team/stats/_/name/gs/golden-state-warriors'
+      'http://localhost:5000/sources/NBAWebsiteGoldenStateWarriors.html'
     )
-    .then(data => {
-      console.log(data);
+    .then(players => {
+      $root.appendChild(Widget(players));
+
     });
-  // const $root = document.querySelector('#root');
-  // const $app = null;
-  // $root.appendChild($app);
+
+
+
+
 }
