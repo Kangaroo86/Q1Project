@@ -86,19 +86,23 @@ function main() {
   const $root = document.getElementById('root');
   $root.appendChild(InputForm());
 
-  scraper
-    .scrape(
-      'http://localhost:5000/sources/NBAWebsiteGoldenStateWarriors.html'
-    )
-    .then(players => {
-      $root.appendChild(Widget(players));
+  const URL = document.getElementById('textarea1');
+  const $submit = document.getElementById('executeProgram');
 
+  $submit.addEventListener('click', () => {
+    event.preventDefault();
+
+    scraper
+      .scrape(
+        URL.value //this ran on localhost //'http://localhost:5000/sources/NBAWebsiteGoldenStateWarriors.html'
+      )
+      .then(myOBJ => {$root.appendChild(Widget(myOBJ));
     });
 
-
-
-
+  })
 }
+//http://localhost:5000/sources/NBAWebsiteGoldenStateWarriors.html
+//http://localhost:5000/sources/CharlotteHornetsWEB.html
 
 
 /***/ }),
@@ -126,7 +130,9 @@ module.exports = class NBAScraper {
         .querySelector('b').innerText
 
         const teamLogo = doc
-        .querySelector('.teamlogo').src
+        // .querySelector('.teamlogo').src
+        .getElementsByTagName('img')[5].src;
+
 
         const players = [];
         for (let $row of rows) {
@@ -148,11 +154,19 @@ module.exports = class NBAScraper {
           });
         }
 
+        function sorting(input) {
+          if(input) {
+            players.sort(function(a, b) {
+              return b.PPG - a.PPG;
+            });
+            //
+          }
+        }
+
         players.sort(function(a, b) {
           return b.PPG - a.PPG;
         });
 
-        return players;
 
 
         const myOBJ = {
@@ -160,6 +174,8 @@ module.exports = class NBAScraper {
           TeamLogo: teamLogo,
           array: players
         }
+
+        return myOBJ;
 
 
 
@@ -194,12 +210,10 @@ const {
   td
 } = __webpack_require__(/*! elementx */ 3);
 
-module.exports = function Widget(players) {
+module.exports = function Widget(myOBJ) {
   // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
   //   return div(player.PLAYER + ' | ' + player.PPG)
   // }));
-
-
 
 
   const widgetCard =
@@ -207,11 +221,11 @@ module.exports = function Widget(players) {
         div({class:"col s12 m5"},
           div({class:"card"},
             div({class:"card-image"},
-              img({id:"test"})
+              img({id:"test", src:`${myOBJ.TeamLogo}`})
             ),
             div({class:"card-content"},
               p({class:"card-title",
-              id:"teamName"})
+              id:"teamName"}, `${myOBJ.TeamName}`)
             ),
             div({class:"card-action"},
               a({href:"#"},'This is a link')
@@ -239,32 +253,27 @@ module.exports = function Widget(players) {
         ) //col s12 m7
       ); //row
 
-
-
-// let elementTR = widgetCard.querySelector('.Widget');
 let elementTbody = widgetCard.querySelector('tbody');
-
-for(var i = 0; i < players.length; i++) {
+for(var i = 0; i < myOBJ.array.length; i++) {
   let createTR = document.createElement('tr');
 
   let tdName = document.createElement('td');
-  tdName.innerText = players[i].PLAYER;
+  tdName.innerText = myOBJ.array[i].PLAYER;
 
   let tdPPG = document.createElement('td');
-  tdPPG.innerText = players[i].PPG;
+  tdPPG.innerText = myOBJ.array[i].PPG;
 
   let tdRebounds = document.createElement('td');
-  tdRebounds.innerText = players[i].RPG;
+  tdRebounds.innerText = myOBJ.array[i].RPG;
 
   let tdAssists = document.createElement('td');
-  tdAssists.innerText = players[i].APG;
+  tdAssists.innerText = myOBJ.array[i].APG;
 
   let tdSteals = document.createElement('td');
-  tdSteals.innerText = players[i].SPG;
+  tdSteals.innerText = myOBJ.array[i].SPG;
 
-  // createTR.appendChild(createTD);
   createTR.appendChild(tdName);
-  createTR.appendChild(tdPPG); //came out blank
+  createTR.appendChild(tdPPG);
   createTR.appendChild(tdRebounds);
   createTR.appendChild(tdAssists);
   createTR.appendChild(tdSteals);
@@ -272,9 +281,12 @@ for(var i = 0; i < players.length; i++) {
 }
 
 
+console.log(`${myOBJ.TeamLogo}`);
 
-console.log(players);
-console.log(widgetCard);
+//console.log(myOBJ);
+//console.log(widgetCard);
+
+
 
 return widgetCard;
 
@@ -282,7 +294,9 @@ return widgetCard;
 
 }
 
-
+// document.getElementById("executeProgram").addEventListener('click', function() {
+//   Widget(myOBJ);
+// }
 
 // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
 //   return div(player.PLAYER + ' | ' + player.PPG)
@@ -302,7 +316,32 @@ return widgetCard;
 
 
 
-
+// for(var i = 0; i < players.length; i++) {
+//   let createTR = document.createElement('tr');
+//
+//   let tdName = document.createElement('td');
+//   tdName.innerText = players[i].PLAYER;
+//
+//   let tdPPG = document.createElement('td');
+//   tdPPG.innerText = players[i].PPG;
+//
+//   let tdRebounds = document.createElement('td');
+//   tdRebounds.innerText = players[i].RPG;
+//
+//   let tdAssists = document.createElement('td');
+//   tdAssists.innerText = players[i].APG;
+//
+//   let tdSteals = document.createElement('td');
+//   tdSteals.innerText = players[i].SPG;
+//
+//   // createTR.appendChild(createTD);
+//   createTR.appendChild(tdName);
+//   createTR.appendChild(tdPPG); //came out blank
+//   createTR.appendChild(tdRebounds);
+//   createTR.appendChild(tdAssists);
+//   createTR.appendChild(tdSteals);
+//   elementTbody.appendChild(createTR);
+// }
 
 
 
@@ -608,26 +647,61 @@ const {
   form,
   textarea,
   button,
+  input,
+  option,
+  select
 } = __webpack_require__(/*! elementx */ 3);
 
 module.exports = function InputForm() {
-  return div(
-        {class:"row"},
-        form(
-          {class:"col s12"},
-          div(
-            {class:"row"},
-            div(
-              {class:"input-field col s9"},
-              textarea(
-                {id:"textarea1", class:"materialize-textarea"}
+
+  let inputForm =
+    div({class:"row"},
+        form({class:"col s12"},
+          div({class:"row"},
+            div({class:"input-field col s9"},
+              textarea({id:"textarea1", class:"materialize-textarea"}
               )
             )
           )
         ),
-        button({class:"col s2 btn waves-effect waves-light", type:"submit", name:"action"}, 'SUBMIT')
+        button({class:"col s2 btn waves-effect waves-light", type:"submit", name:"action", id:"executeProgram"}, 'SUBMIT')
       );
+
+      // form({onsubmit:"return checkForSelection();"},
+      //   select({id:"states"},
+      //     option({value:"", selected:"selected"},"SORT OPTION",
+      //       option({value:"sortPlayers", selected:"selected"}, "sort by Players"),
+      //       option({value:"sortPPG", selected:"selected"}, "sort by PPG"),
+      //       option({value:"sortRebounds", selected:"selected"}, "sort by Rebounds"),
+      //       option({value:"sortAssists", selected:"selected"}, "sort by Assists"),
+      //       option({value:"sortSteals", selected:"sort by Steals"})
+      //         )
+      //       ),
+      //       input({type:"submit", value:"submit form"})
+      //     )
+
+
+return inputForm;
+
 }
+
+
+
+
+
+
+// <form onsubmit="return checkForSelection();">
+//     <select id="states">
+//         <option value="" selected="selected">
+//             SELECT A STATE</option>
+//             <option value="sortPlayers">sort by Players</option>
+//             <option value="sortPPG">sort by PPG</option>
+//             <option value="sortRebounds">sort by Rebounds</option>
+//             <option value="sortAssists">sort by Assists</option>
+//             <option value="sortSteals">sort by Steals</option>
+//     </select>
+//     <input type="submit" value="submit form">
+// </form>
 
 
 /***/ })

@@ -11,12 +11,10 @@ const {
   td
 } = require('elementx');
 
-module.exports = function Widget(players) {
+module.exports = function Widget(myOBJ) {
   // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
   //   return div(player.PLAYER + ' | ' + player.PPG)
   // }));
-
-
 
 
   const widgetCard =
@@ -24,11 +22,11 @@ module.exports = function Widget(players) {
         div({class:"col s12 m5"},
           div({class:"card"},
             div({class:"card-image"},
-              img({id:"test"})
+              img({id:"test", src:`${myOBJ.TeamLogo}`})
             ),
             div({class:"card-content"},
               p({class:"card-title",
-              id:"teamName"})
+              id:"teamName"}, `${myOBJ.TeamName}`)
             ),
             div({class:"card-action"},
               a({href:"#"},'This is a link')
@@ -56,32 +54,27 @@ module.exports = function Widget(players) {
         ) //col s12 m7
       ); //row
 
-
-
-// let elementTR = widgetCard.querySelector('.Widget');
 let elementTbody = widgetCard.querySelector('tbody');
-
-for(var i = 0; i < players.length; i++) {
+for(var i = 0; i < myOBJ.array.length; i++) {
   let createTR = document.createElement('tr');
 
   let tdName = document.createElement('td');
-  tdName.innerText = players[i].PLAYER;
+  tdName.innerText = myOBJ.array[i].PLAYER;
 
   let tdPPG = document.createElement('td');
-  tdPPG.innerText = players[i].PPG;
+  tdPPG.innerText = myOBJ.array[i].PPG;
 
   let tdRebounds = document.createElement('td');
-  tdRebounds.innerText = players[i].RPG;
+  tdRebounds.innerText = myOBJ.array[i].RPG;
 
   let tdAssists = document.createElement('td');
-  tdAssists.innerText = players[i].APG;
+  tdAssists.innerText = myOBJ.array[i].APG;
 
   let tdSteals = document.createElement('td');
-  tdSteals.innerText = players[i].SPG;
+  tdSteals.innerText = myOBJ.array[i].SPG;
 
-  // createTR.appendChild(createTD);
   createTR.appendChild(tdName);
-  createTR.appendChild(tdPPG); //came out blank
+  createTR.appendChild(tdPPG);
   createTR.appendChild(tdRebounds);
   createTR.appendChild(tdAssists);
   createTR.appendChild(tdSteals);
@@ -89,9 +82,12 @@ for(var i = 0; i < players.length; i++) {
 }
 
 
+console.log(`${myOBJ.TeamLogo}`);
 
-console.log(players);
-console.log(widgetCard);
+//console.log(myOBJ);
+//console.log(widgetCard);
+
+
 
 return widgetCard;
 
@@ -99,7 +95,9 @@ return widgetCard;
 
 }
 
-
+// document.getElementById("executeProgram").addEventListener('click', function() {
+//   Widget(myOBJ);
+// }
 
 // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
 //   return div(player.PLAYER + ' | ' + player.PPG)
@@ -119,7 +117,32 @@ return widgetCard;
 
 
 
-
+// for(var i = 0; i < players.length; i++) {
+//   let createTR = document.createElement('tr');
+//
+//   let tdName = document.createElement('td');
+//   tdName.innerText = players[i].PLAYER;
+//
+//   let tdPPG = document.createElement('td');
+//   tdPPG.innerText = players[i].PPG;
+//
+//   let tdRebounds = document.createElement('td');
+//   tdRebounds.innerText = players[i].RPG;
+//
+//   let tdAssists = document.createElement('td');
+//   tdAssists.innerText = players[i].APG;
+//
+//   let tdSteals = document.createElement('td');
+//   tdSteals.innerText = players[i].SPG;
+//
+//   // createTR.appendChild(createTD);
+//   createTR.appendChild(tdName);
+//   createTR.appendChild(tdPPG); //came out blank
+//   createTR.appendChild(tdRebounds);
+//   createTR.appendChild(tdAssists);
+//   createTR.appendChild(tdSteals);
+//   elementTbody.appendChild(createTR);
+// }
 
 
 

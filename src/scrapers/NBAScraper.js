@@ -14,7 +14,9 @@ module.exports = class NBAScraper {
         .querySelector('b').innerText
 
         const teamLogo = doc
-        .querySelector('.teamlogo').src
+        // .querySelector('.teamlogo').src
+        .getElementsByTagName('img')[5].src;
+
 
         const players = [];
         for (let $row of rows) {
@@ -36,11 +38,19 @@ module.exports = class NBAScraper {
           });
         }
 
+        function sorting(input) {
+          if(input) {
+            players.sort(function(a, b) {
+              return b.PPG - a.PPG;
+            });
+            //
+          }
+        }
+
         players.sort(function(a, b) {
           return b.PPG - a.PPG;
         });
 
-        return players;
 
 
         const myOBJ = {
@@ -48,6 +58,8 @@ module.exports = class NBAScraper {
           TeamLogo: teamLogo,
           array: players
         }
+
+        return myOBJ;
 
 
 
