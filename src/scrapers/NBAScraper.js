@@ -1,6 +1,7 @@
 module.exports = class NBAScraper {
   scrape(url) {
-    return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
+    // return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
+    return fetch(url)
       .then(response => response.text())
       .then(html => {
         const parser = new DOMParser();
@@ -8,6 +9,15 @@ module.exports = class NBAScraper {
         const rows = doc
           .querySelector('table')
           .querySelectorAll('tr[class*="player-"'); //https://en.wikipedia.org/wiki/Cascading_Style_Sheets  //E[foo*="bar"]
+
+        const teamName = doc
+        .querySelector('b').innerText
+
+        const teamLogo = doc
+        // .querySelector('.teamlogo').src
+        .getElementsByTagName('img')[5].src;
+
+
         const players = [];
         for (let $row of rows) {
           players.push({
@@ -27,15 +37,34 @@ module.exports = class NBAScraper {
             ATO: parseFloat($row.querySelector('td:nth-child(14)').innerText)
           });
         }
-        const topPlayers = [];
+
+        function sorting(input) {
+          if(input) {
+            players.sort(function(a, b) {
+              return b.PPG - a.PPG;
+            });
+            //
+          }
+        }
 
         players.sort(function(a, b) {
           return b.PPG - a.PPG;
         });
 
-        return players;
+
+
+        const myOBJ = {
+          TeamName: teamName,
+          TeamLogo: teamLogo,
+          array: players
+        }
+
+        return myOBJ;
+
+
+
       });
-  }
+    }
 };
 
 //http://cors-bypass-proxy.axiomlogic.com
