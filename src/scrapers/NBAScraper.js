@@ -1,7 +1,8 @@
 module.exports = class NBAScraper {
   scrape(url) {
-    // return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
-    return fetch(url)
+    return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
+    //return fetch(url)
+    //var fetch(url)
       .then(response => response.text())
       .then(html => {
         const parser = new DOMParser();
@@ -16,7 +17,6 @@ module.exports = class NBAScraper {
         const teamLogo = doc
         // .querySelector('.teamlogo').src
         .getElementsByTagName('img')[5].src;
-
 
         const players = [];
         for (let $row of rows) {
@@ -38,26 +38,76 @@ module.exports = class NBAScraper {
           });
         }
 
-        function sorting(input) {
-          if(input) {
-            players.sort(function(a, b) {
-              return b.PPG - a.PPG;
-            });
-            //
-          }
-        }
 
-        players.sort(function(a, b) {
-          return b.PPG - a.PPG;
-        });
+        // function sorting(input) {
+        //   if(input == 'PPG') {
+        //     players.sort(function(a, b) {
+        //       return b.PPG - a.PPG;
+        //     });
+        //   }
+        //   else if(input == 'RPG') {
+        //     players.sort(function(a, b) {
+        //       return b.RPG - a.RPG;
+        //     });
+        //   }
+        //   else if(input == 'APG') {
+        //     players.sort(function(a, b) {
+        //       return b.APG - a.APG;
+        //     });
+        //   }
+        //   else if(input == 'SPG') {
+        //     players.sort(function(a, b) {
+        //       return b.SPG - a.SPG;
+        //     });
+        //   }
+        // }
 
-
+        // players.sort(function(a, b) {
+        //   return b.PPG - a.PPG;
+        // });
 
         const myOBJ = {
           TeamName: teamName,
           TeamLogo: teamLogo,
-          array: players
+          array: players,
+          sorting: function(input) {
+            if(input == 'PPG') {
+              players.sort(function(a, b) {
+                return b.PPG - a.PPG;
+              });
+            }
+            else if(input == 'RPG') {
+              players.sort(function(a, b) {
+                return b.RPG - a.RPG;
+              });
+            }
+            else if(input == 'APG') {
+              players.sort(function(a, b) {
+                return b.APG - a.APG;
+              });
+            }
+            else if(input == 'SPG') {
+              players.sort(function(a, b) {
+                return b.SPG - a.SPG;
+              });
+            }
+          }
         }
+
+
+        // const myOBJ = {
+        //   TeamName: teamName,
+        //   TeamLogo: teamLogo,
+        //   array: players,
+        //   sorting: function(input) {
+        //       players.sort(function(a, b) {
+        //         return a.input - b.input;
+        //         //console.log(a.input - b.input); //return NaN
+        //       });
+        //     }
+        //   }
+
+
 
         return myOBJ;
 
@@ -68,5 +118,8 @@ module.exports = class NBAScraper {
 };
 
 //http://cors-bypass-proxy.axiomlogic.com
-
 //http://cors-anywhere.herokuapp.com
+
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/atl
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/okc
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/gs
