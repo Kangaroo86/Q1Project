@@ -1,99 +1,90 @@
-const {
-  div,
-  img,
-  p,
-  a,
-  tbody,
-  table,
-  thead,
-  th,
-  tr,
-  td
-} = require('elementx');
+const { div, img, p, a, tbody, table, thead, th, tr } = require('elementx');
 
 module.exports = function Widget(myOBJ) {
   // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
   //   return div(player.PLAYER + ' | ' + player.PPG)
   // }));
 
-
-  const widgetCard =
-      div({class:"row"},
-        div({class:"col s12 m5"},
-          div({class:"card"},
-            div({class:"card-image"},
-              img({id:"test", src:`${myOBJ.TeamLogo}`})
-            ),
-            div({class:"card-content"},
-              p({class:"card-title",
-              id:"teamName"}, `${myOBJ.TeamName}`)
-            ),
-            div({class:"card-action"},
-              a({href:"#"},'This is a link')
-            )
-          ) //card
-        ),//"col s12 m5"
+  const widgetCard = div(
+    { class: 'row' },
+    div(
+      { class: 'col s12 m5' },
+      div(
+        { class: 'card' },
+        div(
+          { class: 'card-image' },
+          img({ id: 'test', src: `${myOBJ.TeamLogo}` })
+        ),
+        div(
+          { class: 'card-content' },
+          p(
+            {
+              class: 'card-title',
+              id: 'teamName'
+            },
+            `${myOBJ.TeamName}`
+          )
+        ),
+        div({ class: 'card-action' }, a({ href: '#' }, 'This is a link'))
+      ) //card
+    ), //"col s12 m5"
     //------------------------------
-        div({class:"col s12 m7"},
-          div({class:"card horizontal"},
-            table({class:"bordered"},
-              thead(
-                tr(
-                  th('Players'),
-                  th('PPG'),
-                  th('Rebounds'),
-                  th('Assists'),
-                  th('Steals')
-                )
-              ),
-              tbody(
-                // tr({class: 'Widget'})
-              ) //tbody
-            ) //table
-          ) //card horizontal
-        ) //col s12 m7
-      ); //row
+    div(
+      { class: 'col s12 m7' },
+      div(
+        { class: 'card horizontal' },
+        table(
+          { class: 'bordered' },
+          thead(
+            tr(
+              th('Players'),
+              th('PPG'),
+              th('Rebounds'),
+              th('Assists'),
+              th('Steals')
+            )
+          ),
+          tbody()
+          // tr({class: 'Widget'}) //tbody
+        ) //table
+      ) //card horizontal
+    ) //col s12 m7
+  ); //row
 
-let elementTbody = widgetCard.querySelector('tbody');
-for(var i = 0; i < myOBJ.array.length; i++) {
-  let createTR = document.createElement('tr');
+  let elementTbody = widgetCard.querySelector('tbody');
+  for (var i = 0; i < myOBJ.array.length; i++) {
+    let createTR = document.createElement('tr');
 
-  let tdName = document.createElement('td');
-  tdName.innerText = myOBJ.array[i].PLAYER;
+    let tdName = document.createElement('td');
+    tdName.innerText = myOBJ.array[i].PLAYER;
 
-  let tdPPG = document.createElement('td');
-  tdPPG.innerText = myOBJ.array[i].PPG;
+    let tdPPG = document.createElement('td');
+    tdPPG.innerText = myOBJ.array[i].PPG;
 
-  let tdRebounds = document.createElement('td');
-  tdRebounds.innerText = myOBJ.array[i].RPG;
+    let tdRebounds = document.createElement('td');
+    tdRebounds.innerText = myOBJ.array[i].RPG;
 
-  let tdAssists = document.createElement('td');
-  tdAssists.innerText = myOBJ.array[i].APG;
+    let tdAssists = document.createElement('td');
+    tdAssists.innerText = myOBJ.array[i].APG;
 
-  let tdSteals = document.createElement('td');
-  tdSteals.innerText = myOBJ.array[i].SPG;
+    let tdSteals = document.createElement('td');
+    tdSteals.innerText = myOBJ.array[i].SPG;
 
-  createTR.appendChild(tdName);
-  createTR.appendChild(tdPPG);
-  createTR.appendChild(tdRebounds);
-  createTR.appendChild(tdAssists);
-  createTR.appendChild(tdSteals);
-  elementTbody.appendChild(createTR);
-}
+    createTR.appendChild(tdName);
+    createTR.appendChild(tdPPG);
+    createTR.appendChild(tdRebounds);
+    createTR.appendChild(tdAssists);
+    createTR.appendChild(tdSteals);
+    elementTbody.appendChild(createTR);
+  }
 
+  console.log(`${myOBJ.TeamLogo}`);
 
-console.log(`${myOBJ.TeamLogo}`);
+  //console.log(myOBJ);
+  //console.log(widgetCard);
 
-//console.log(myOBJ);
-//console.log(widgetCard);
-
-
-
-return widgetCard;
-
-
-
-}
+  return widgetCard;
+};
 
 // document.getElementById("executeProgram").addEventListener('click', function() {
 //   Widget(myOBJ);
@@ -108,14 +99,6 @@ return widgetCard;
 //   <div>Kevin D.</div>
 //   <div>Stephen C.</div>
 // </div>
-
-
-
-
-
-
-
-
 
 // for(var i = 0; i < players.length; i++) {
 //   let createTR = document.createElement('tr');
@@ -143,13 +126,6 @@ return widgetCard;
 //   createTR.appendChild(tdSteals);
 //   elementTbody.appendChild(createTR);
 // }
-
-
-
-
-
-
-
 
 // ------BACKUP-----------
 // return div(
