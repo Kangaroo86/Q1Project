@@ -1,4 +1,4 @@
-const { select, option, form } = require('elementx');
+const { select, option } = require('elementx');
 
 // module.exports = function TestSelect() {
 //   return select(
@@ -8,7 +8,6 @@ const { select, option, form } = require('elementx');
 //     option({ value: 'SPG' }, 'sort by Steals')
 //   );
 // };
-
 
 //RadioButton
 // module.exports = function TestSelect() {
@@ -24,10 +23,11 @@ const { select, option, form } = require('elementx');
 
 //Drop down list
 module.exports = function TestSelect() {
-  return select({id:"select"},
-      option({ value: 'PPG' }, 'sort by PPG'),
-      option({ value: 'RPG' }, 'sort by Rebounds'),
-      option({ value: 'APG' }, 'sort by Assists'),
-      option({ value: 'SPG' }, 'sort by Steals')
-    )
+  return select(
+    { id: 'select' },
+    option({ value: 'PPG' }, 'sort by PPG'),
+    option({ value: 'RPG' }, 'sort by Rebounds'),
+    option({ value: 'APG' }, 'sort by Assists'),
+    option({ value: 'SPG' }, 'sort by Steals')
+  );
 };

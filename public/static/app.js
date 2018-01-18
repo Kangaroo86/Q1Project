@@ -60,11 +60,134 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/*!***************************************!*\
+  !*** ./node_modules/elementx/dist.js ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var htmlTags = __webpack_require__(/*! html-tag-names */ 4)
+var document = __webpack_require__(/*! global-undom */ 5)
+var svgTags = __webpack_require__(/*! svg-tag-names */ 7)
+
+var namespaces = {
+  ev: 'http://www.w3.org/2001/xml-events',
+  xlink: 'http://www.w3.org/1999/xlink',
+  xml: 'http://www.w3.org/XML/1998/namespace',
+  xmlns: 'http://www.w3.org/2000/xmlns/'
+}
+
+var booleanAttrs = [
+  'defaultchecked',
+  'formnovalidate',
+  'indeterminate',
+  'willvalidate',
+  'autofocus',
+  'checked',
+  'disabled',
+  'readonly',
+  'required',
+  'selected'
+]
+
+var isEventHandler = function (key) { return key.slice(0, 2) === 'on'; }
+
+var normalizeEventName = function (event) { return 'on' + event.slice(2, event.length).toLowerCase(); }
+
+var isPlainObject = function (obj) { return typeof obj === 'object' && obj.constructor === Object; }
+
+var contains = function (val, obj) { return obj.indexOf(val) !== -1; }
+
+var getSvgAttributeNamespace = function (attr) {
+  var prefix = attr.split(':', 1)[0]
+  return namespaces.hasOwnProperty(prefix)
+    ? namespaces[prefix]
+    : null
+}
+
+var createElementTag = function (tagName) {
+  return contains(tagName, svgTags)
+    ? document.createElementNS('http://www.w3.org/2000/svg', tagName)
+    : document.createElement(tagName)
+}
+
+var setAttribute = function (element, key, value) {
+  return contains(':', key)
+    ? element.setAttributeNS(getSvgAttributeNamespace(key), key, value)
+    : element.setAttribute(key, value)
+}
+
+var createElement = function (tagName) {
+  var args = [], len = arguments.length - 1;
+  while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+  var attrs
+  var children = []
+  args.forEach(function (arg) {
+    if (!arg) {
+      return
+    } else if (!attrs && isPlainObject(arg)) {
+      attrs = arg
+    } else if (Array.isArray(arg)) {
+      children.push.apply(children, arg)
+    } else {
+      children.push(arg)
+    }
+  })
+
+  var element = createElementTag(tagName)
+
+  for (var key in attrs) {
+    var value = attrs[key]
+
+    if (isEventHandler(key)) {
+      element[normalizeEventName(key)] = value
+    } else if (contains(key, booleanAttrs)) {
+      value !== false && element.setAttribute(key, key)
+    } else {
+      setAttribute(element, key, value)
+    }
+  }
+
+  if (children && children.length > 0) {
+    children.forEach(function (child) {
+      element.appendChild(
+         typeof child === 'string'
+          ? document.createTextNode(child)
+          : child
+      )
+    })
+  }
+
+  return element
+}
+
+var createTagFactory = function (tag) {
+  return function () {
+    var args = [], len = arguments.length;
+    while ( len-- ) args[ len ] = arguments[ len ];
+
+    return createElement.apply(void 0, [ tag ].concat( args ));
+  }
+}
+
+module.exports = createElement
+
+svgTags.concat(htmlTags).forEach(function (tag) {
+  module.exports[tag] = createTagFactory(tag)
+})
+
+
+
+/***/ }),
+/* 1 */
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
@@ -74,9 +197,10 @@
 
 /* eslint-disable no-console */
 
-const NBAScraper = __webpack_require__(/*! ./scrapers/NBAScraper */ 1); //this is how you import from the other modules
-const Widget = __webpack_require__(/*! ./components/Widget */ 2);
+const NBAScraper = __webpack_require__(/*! ./scrapers/NBAScraper */ 2); //this is how you import from the other modules
+const Widget = __webpack_require__(/*! ./components/Widget */ 3);
 const InputForm = __webpack_require__(/*! ./components/InputForm */ 8);
+//const TestSelect = require('./components/RadioButton'); //DEBUGGING
 
 addEventListener('DOMContentLoaded', main);
 
@@ -85,13 +209,13 @@ const scraper = new NBAScraper();
 function main() {
   const $root = document.getElementById('root');
   $root.appendChild(InputForm());
+  //$root.appendChild(TestSelect()); //DEBUGGING
 
   const URL = document.getElementById('textarea1');
   const $submit = document.getElementById('executeProgram');
 
   $submit.addEventListener('click', () => {
     event.preventDefault();
-
     scraper
       .scrape(
         URL.value //this ran on localhost //'http://localhost:5000/sources/NBAWebsiteGoldenStateWarriors.html'
@@ -106,7 +230,7 @@ function main() {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /*!************************************!*\
   !*** ./src/scrapers/NBAScraper.js ***!
   \************************************/
@@ -116,8 +240,9 @@ function main() {
 
 module.exports = class NBAScraper {
   scrape(url) {
-    // return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
-    return fetch(url)
+    return fetch(`http://cors-bypass-proxy.axiomlogic.com/${url}`)
+    //return fetch(url)
+    //var fetch(url)
       .then(response => response.text())
       .then(html => {
         const parser = new DOMParser();
@@ -132,7 +257,6 @@ module.exports = class NBAScraper {
         const teamLogo = doc
         // .querySelector('.teamlogo').src
         .getElementsByTagName('img')[5].src;
-
 
         const players = [];
         for (let $row of rows) {
@@ -154,26 +278,76 @@ module.exports = class NBAScraper {
           });
         }
 
-        function sorting(input) {
-          if(input) {
-            players.sort(function(a, b) {
-              return b.PPG - a.PPG;
-            });
-            //
-          }
-        }
 
-        players.sort(function(a, b) {
-          return b.PPG - a.PPG;
-        });
+        // function sorting(input) {
+        //   if(input == 'PPG') {
+        //     players.sort(function(a, b) {
+        //       return b.PPG - a.PPG;
+        //     });
+        //   }
+        //   else if(input == 'RPG') {
+        //     players.sort(function(a, b) {
+        //       return b.RPG - a.RPG;
+        //     });
+        //   }
+        //   else if(input == 'APG') {
+        //     players.sort(function(a, b) {
+        //       return b.APG - a.APG;
+        //     });
+        //   }
+        //   else if(input == 'SPG') {
+        //     players.sort(function(a, b) {
+        //       return b.SPG - a.SPG;
+        //     });
+        //   }
+        // }
 
-
+        // players.sort(function(a, b) {
+        //   return b.PPG - a.PPG;
+        // });
 
         const myOBJ = {
           TeamName: teamName,
           TeamLogo: teamLogo,
-          array: players
+          array: players,
+          sorting: function(input) {
+            if(input == 'PPG') {
+              players.sort(function(a, b) {
+                return b.PPG - a.PPG;
+              });
+            }
+            else if(input == 'RPG') {
+              players.sort(function(a, b) {
+                return b.RPG - a.RPG;
+              });
+            }
+            else if(input == 'APG') {
+              players.sort(function(a, b) {
+                return b.APG - a.APG;
+              });
+            }
+            else if(input == 'SPG') {
+              players.sort(function(a, b) {
+                return b.SPG - a.SPG;
+              });
+            }
+          }
         }
+
+
+        // const myOBJ = {
+        //   TeamName: teamName,
+        //   TeamLogo: teamLogo,
+        //   array: players,
+        //   sorting: function(input) {
+        //       players.sort(function(a, b) {
+        //         return a.input - b.input;
+        //         //console.log(a.input - b.input); //return NaN
+        //       });
+        //     }
+        //   }
+
+
 
         return myOBJ;
 
@@ -184,12 +358,15 @@ module.exports = class NBAScraper {
 };
 
 //http://cors-bypass-proxy.axiomlogic.com
-
 //http://cors-anywhere.herokuapp.com
+
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/atl
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/okc
+// http://cors-bypass-proxy.axiomlogic.com/http://www.espn.com/nba/team/stats/_/name/gs
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /*!**********************************!*\
   !*** ./src/components/Widget.js ***!
   \**********************************/
@@ -206,97 +383,94 @@ const {
   table,
   thead,
   th,
-  tr,
-  td
-} = __webpack_require__(/*! elementx */ 3);
+  tr
+} = __webpack_require__(/*! elementx */ 0);
 
 module.exports = function Widget(myOBJ) {
-  // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
-  //   return div(player.PLAYER + ' | ' + player.PPG)
-  // }));
-
-
   const widgetCard =
-      div({class:"row"},
-        div({class:"col s12 m5"},
-          div({class:"card"},
-            div({class:"card-image"},
-              img({id:"test", src:`${myOBJ.TeamLogo}`})
+    div({class: "row"},
+      div({class: "col s12 m5"},
+        div({class: "card"},
+          div({class: "card-image"},
+            img({id: "test", src: `${myOBJ.TeamLogo}`})
+          ),
+          div({class: "card-content"},
+            p({class: "card-title", id: "teamName"}, `${myOBJ.TeamName}`)
+          ),
+          div({class: "card-action"},
+            a({href: "#"}, 'This is a link')
+          )
+        ) //card
+      ), //"col s12 m5"
+      //------------------------------
+      div({class: "col s12 m7"},
+        div({class: "card horizontal"},
+          table({class: "bordered"},
+            thead(
+              tr(
+                th('Players'),
+                th('PPG'),
+                th('Rebounds'),
+                th('Assists'),
+                th('Steals')
+              )
             ),
-            div({class:"card-content"},
-              p({class:"card-title",
-              id:"teamName"}, `${myOBJ.TeamName}`)
-            ),
-            div({class:"card-action"},
-              a({href:"#"},'This is a link')
-            )
-          ) //card
-        ),//"col s12 m5"
-    //------------------------------
-        div({class:"col s12 m7"},
-          div({class:"card horizontal"},
-            table({class:"bordered"},
-              thead(
-                tr(
-                  th('Players'),
-                  th('PPG'),
-                  th('Rebounds'),
-                  th('Assists'),
-                  th('Steals')
-                )
-              ),
-              tbody(
-                // tr({class: 'Widget'})
-              ) //tbody
-            ) //table
-          ) //card horizontal
-        ) //col s12 m7
-      ); //row
+            tbody(
+              // tr({class: 'Widget'})
+            ) //tbody
+          ) //table
+        ) //card horizontal
+      ) //col s12 m7
+    ); //row
 
-let elementTbody = widgetCard.querySelector('tbody');
-for(var i = 0; i < myOBJ.array.length; i++) {
-  let createTR = document.createElement('tr');
 
-  let tdName = document.createElement('td');
-  tdName.innerText = myOBJ.array[i].PLAYER;
+  let elementTbody = widgetCard.querySelector('tbody');
+  for (var i = 0; i < myOBJ.array.length; i++) {
+    let createTR = document.createElement('tr');
 
-  let tdPPG = document.createElement('td');
-  tdPPG.innerText = myOBJ.array[i].PPG;
+    let tdName = document.createElement('td');
+    tdName.innerText = myOBJ.array[i].PLAYER;
 
-  let tdRebounds = document.createElement('td');
-  tdRebounds.innerText = myOBJ.array[i].RPG;
+    let tdPPG = document.createElement('td');
+    tdPPG.innerText = myOBJ.array[i].PPG;
 
-  let tdAssists = document.createElement('td');
-  tdAssists.innerText = myOBJ.array[i].APG;
+    let tdRebounds = document.createElement('td');
+    tdRebounds.innerText = myOBJ.array[i].RPG;
 
-  let tdSteals = document.createElement('td');
-  tdSteals.innerText = myOBJ.array[i].SPG;
+    let tdAssists = document.createElement('td');
+    tdAssists.innerText = myOBJ.array[i].APG;
 
-  createTR.appendChild(tdName);
-  createTR.appendChild(tdPPG);
-  createTR.appendChild(tdRebounds);
-  createTR.appendChild(tdAssists);
-  createTR.appendChild(tdSteals);
-  elementTbody.appendChild(createTR);
+    let tdSteals = document.createElement('td');
+    tdSteals.innerText = myOBJ.array[i].SPG;
+
+    createTR.appendChild(tdName);
+    createTR.appendChild(tdPPG);
+    createTR.appendChild(tdRebounds);
+    createTR.appendChild(tdAssists);
+    createTR.appendChild(tdSteals);
+    elementTbody.appendChild(createTR);
+  }
+
+  // ==========DEBUGGING==========
+  //console.log(myOBJ.array[0].PLAYER);
+  //console.log(myOBJ.sorting('PPG'));
+  //console.log(`${myOBJ.TeamLogo}`);
+  //console.log(myOBJ);
+  //console.log(widgetCard);
+
+
+  return widgetCard;
+
 }
 
 
-console.log(`${myOBJ.TeamLogo}`);
-
-//console.log(myOBJ);
-//console.log(widgetCard);
 
 
 
-return widgetCard;
 
 
 
-}
 
-// document.getElementById("executeProgram").addEventListener('click', function() {
-//   Widget(myOBJ);
-// }
 
 // return div({ class: 'Widget' }, players.slice(0, 3).map(player => {
 //   return div(player.PLAYER + ' | ' + player.PPG)
@@ -460,129 +634,6 @@ return widgetCard;
 
 
 /***/ }),
-/* 3 */
-/*!***************************************!*\
-  !*** ./node_modules/elementx/dist.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var htmlTags = __webpack_require__(/*! html-tag-names */ 4)
-var document = __webpack_require__(/*! global-undom */ 5)
-var svgTags = __webpack_require__(/*! svg-tag-names */ 7)
-
-var namespaces = {
-  ev: 'http://www.w3.org/2001/xml-events',
-  xlink: 'http://www.w3.org/1999/xlink',
-  xml: 'http://www.w3.org/XML/1998/namespace',
-  xmlns: 'http://www.w3.org/2000/xmlns/'
-}
-
-var booleanAttrs = [
-  'defaultchecked',
-  'formnovalidate',
-  'indeterminate',
-  'willvalidate',
-  'autofocus',
-  'checked',
-  'disabled',
-  'readonly',
-  'required',
-  'selected'
-]
-
-var isEventHandler = function (key) { return key.slice(0, 2) === 'on'; }
-
-var normalizeEventName = function (event) { return 'on' + event.slice(2, event.length).toLowerCase(); }
-
-var isPlainObject = function (obj) { return typeof obj === 'object' && obj.constructor === Object; }
-
-var contains = function (val, obj) { return obj.indexOf(val) !== -1; }
-
-var getSvgAttributeNamespace = function (attr) {
-  var prefix = attr.split(':', 1)[0]
-  return namespaces.hasOwnProperty(prefix)
-    ? namespaces[prefix]
-    : null
-}
-
-var createElementTag = function (tagName) {
-  return contains(tagName, svgTags)
-    ? document.createElementNS('http://www.w3.org/2000/svg', tagName)
-    : document.createElement(tagName)
-}
-
-var setAttribute = function (element, key, value) {
-  return contains(':', key)
-    ? element.setAttributeNS(getSvgAttributeNamespace(key), key, value)
-    : element.setAttribute(key, value)
-}
-
-var createElement = function (tagName) {
-  var args = [], len = arguments.length - 1;
-  while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-  var attrs
-  var children = []
-  args.forEach(function (arg) {
-    if (!arg) {
-      return
-    } else if (!attrs && isPlainObject(arg)) {
-      attrs = arg
-    } else if (Array.isArray(arg)) {
-      children.push.apply(children, arg)
-    } else {
-      children.push(arg)
-    }
-  })
-
-  var element = createElementTag(tagName)
-
-  for (var key in attrs) {
-    var value = attrs[key]
-
-    if (isEventHandler(key)) {
-      element[normalizeEventName(key)] = value
-    } else if (contains(key, booleanAttrs)) {
-      value !== false && element.setAttribute(key, key)
-    } else {
-      setAttribute(element, key, value)
-    }
-  }
-
-  if (children && children.length > 0) {
-    children.forEach(function (child) {
-      element.appendChild(
-         typeof child === 'string'
-          ? document.createTextNode(child)
-          : child
-      )
-    })
-  }
-
-  return element
-}
-
-var createTagFactory = function (tag) {
-  return function () {
-    var args = [], len = arguments.length;
-    while ( len-- ) args[ len ] = arguments[ len ];
-
-    return createElement.apply(void 0, [ tag ].concat( args ));
-  }
-}
-
-module.exports = createElement
-
-svgTags.concat(htmlTags).forEach(function (tag) {
-  module.exports[tag] = createTagFactory(tag)
-})
-
-
-
-/***/ }),
 /* 4 */
 /*!************************************************!*\
   !*** ./node_modules/html-tag-names/index.json ***!
@@ -649,45 +700,39 @@ const {
   button,
   input,
   option,
-  select
-} = __webpack_require__(/*! elementx */ 3);
+  select,
+  p,
+  label
+} = __webpack_require__(/*! elementx */ 0);
+
+
 
 module.exports = function InputForm() {
 
   let inputForm =
-    div({class:"row"},
-        form({class:"col s12"},
-          div({class:"row"},
-            div({class:"input-field col s9"},
-              textarea({id:"textarea1", class:"materialize-textarea"}
+    div({ class: "row" },
+        form({ class: "col s12" },
+          div({ class: "row" },
+            div({ class: "input-field col s9" },
+              textarea({ id: "textarea1", class: "materialize-textarea" },
               )
             )
           )
         ),
-        button({class:"col s2 btn waves-effect waves-light", type:"submit", name:"action", id:"executeProgram"}, 'SUBMIT')
+        button({ class:"col s2 btn waves-effect waves-light", type:"submit", name:"action", id:"executeProgram" }, 'SUBMIT')
       );
 
-      // form({onsubmit:"return checkForSelection();"},
-      //   select({id:"states"},
-      //     option({value:"", selected:"selected"},"SORT OPTION",
-      //       option({value:"sortPlayers", selected:"selected"}, "sort by Players"),
-      //       option({value:"sortPPG", selected:"selected"}, "sort by PPG"),
-      //       option({value:"sortRebounds", selected:"selected"}, "sort by Rebounds"),
-      //       option({value:"sortAssists", selected:"selected"}, "sort by Assists"),
-      //       option({value:"sortSteals", selected:"sort by Steals"})
-      //         )
-      //       ),
-      //       input({type:"submit", value:"submit form"})
-      //     )
-
-
 return inputForm;
-
 }
 
 
-
-
+// return select(
+//   option({ value: 'sortPlayers' }, 'sort by Players'),
+//   option({ value: 'sortPPG' }, 'sort by PPG'),
+//   option({ value: 'sortRebounds' }, 'sort by Rebounds'),
+//   option({ value: 'sortAssists' }, 'sort by Assists'),
+//   option({ value: 'sortSteals' }, 'sort by Steals')
+// );
 
 
 // <form onsubmit="return checkForSelection();">
